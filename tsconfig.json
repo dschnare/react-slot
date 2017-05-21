@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "module": "commonjs",
+    "target": "es2015",
+    "moduleResolution": "node",
+    "jsx": "react",
+    "reactNamespace": "React",
+    "outDir": "lib"
+  },
+  "include": [
+    "./src/**/*.js"
+  ]
+}
