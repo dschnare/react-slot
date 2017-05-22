@@ -70,7 +70,14 @@ export default class Slot extends React.Component {
   }
 
   renderNamedSlot () {
-    const { role, name, id, dataset = {}, children, as: slot = 'div' } = this.props
+    const {
+      role,
+      name,
+      id,
+      dataset = {},
+      children,
+      as: slot = 'div'
+    } = this.props
     let attrs = prefixKeys(dataset, 'data-')
     let slotNode = this.findNamedSlotNode(name)
     let content = []

@@ -42,14 +42,15 @@ describe('mergeProps', function () {
   })
 
   it('should merge properties into a new object and ignore the specified properties', function () {
-    const a = { one: 1, two: 2 }
-    const b = { three: 3, four: 4, one: 'one' }
+    const a = { one: 1, two: 2, className: 'a b' }
+    const b = { three: 3, four: 4, one: 'one', className: 'a c d' }
     const c = mergeProps(a, b, { ignore: [ 'one', 'four' ] })
 
     assert.deepStrictEqual(c, {
       one: 1,
       two: 2,
-      three: 3
+      three: 3,
+      className: 'a b c d'
     })
   })
 })
