@@ -5,6 +5,7 @@ import mergeProps from './mergeProps'
 
 export default class Slot extends React.Component {
   static propTypes = {
+    content: PropTypes.node.isRequired,
     name: PropTypes.string,
     children: PropTypes.node,
     id: PropTypes.string,
@@ -26,28 +27,7 @@ export default class Slot extends React.Component {
     as: 'div'
   }
 
-  static contextTypes = {
-    reactLayout: PropTypes.node
-  }
-
-  static childContextTypes = {
-    reactLayout: PropTypes.node
-  }
-
-  getChildContext () {
-    const { children } = this.props
-    return { reactLayout: null }
-  }
-
   render () {
-    const { reactLayout } = this.context
-
-    // If this <Slot> is not within a <Layout> context, or this <Slot> is
-    // nested inside another <Slot> then we don't render anything.
-    if (!reactLayout) {
-      return null
-    }
-
     if (this.isDefaultSlot()) {
       return this.renderDefaultSlot()
     } else {
@@ -125,8 +105,8 @@ export default class Slot extends React.Component {
   }
 
   findNamedSlotNode (name) {
-    const { reactLayout } = this.context
-    const node = React.Children.toArray(reactLayout).filter(child => {
+    const { content } = this.props
+    const node = React.Children.toArray(content).filter(child => {
       const node = child
       return node.props && node.props.slot === name
     })[0]
@@ -135,8 +115,8 @@ export default class Slot extends React.Component {
   }
 
   findDefaultSlotNode () {
-    const { reactLayout } = this.context
-    const node = React.Children.toArray(reactLayout).filter(node => {
+    const { content } = this.props
+    const node = React.Children.toArray(content).filter(node => {
       const props = node.props || {}
       return props.slot === true || props.slot === 'default'
     })[0]
@@ -145,8 +125,8 @@ export default class Slot extends React.Component {
   }
 
   findUnslottedNodes () {
-    const { reactLayout } = this.context
-    return React.Children.toArray(reactLayout).filter(node => {
+    const { content } = this.props
+    return React.Children.toArray(content).filter(node => {
       return !node.props || !('slot' in node.props)
     }).filter(Boolean)
   }

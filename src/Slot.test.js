@@ -1,44 +1,54 @@
 import * as React from 'react'
 import * as assert from 'assert'
 import { shallow, render } from 'enzyme'
-import Layout from './Layout'
 import Slot from './Slot'
 import prefixKeys from './prefixKeys'
 
-describe('Layout', function () {
+describe('Slot', function () {
   it('should render a <div> with className, id and data- attributes', function () {
     const id = 'my-id'
-    const name = 'MyLayout'
+    const name = 'MySlot'
     const className = 'testing'
     const dataset = { target: '#thing', scroll: 'spy' }
     const dataAttributes = prefixKeys(dataset, 'data-')
     const wrapper = shallow(
-      <Layout name={name} id={id} dataset={dataset} content={''} className={className} />
+      <Slot name={name}
+        id={id}
+        dataset={dataset}
+        content={''}
+        className={className}>
+        {''}
+      </Slot>
     )
+
     assert.ok(wrapper.equals(
-      <div id={id} className={'layout-' + name + ' ' + className} {...dataAttributes} />
+      <div
+        id={id}
+        {...dataAttributes}
+        className={'slot-' + name + ' ' + className}>
+        {''}
+      </div>
     ))
   })
 
-  it('should render slots with default content', function () {
-    const name = 'MyLayout'
+  it('should render with default content', function () {
     const wrapper = render(
-      <Layout name={name} content={[]}>
+      <div>
         <h1>Layout</h1>
-        <Slot className='body'>
+        <Slot className='body' content={''}>
           Hello World!
         </Slot>
-        <Slot name='footer'>
+        <Slot name='footer' content={''}>
           The Footer
         </Slot>
-        <Slot name='stuff' />
-        <Slot name='stuff2'>{''}</Slot>
-        <Slot name='footer' />
-      </Layout>
+        <Slot name='stuff' content={''} />
+        <Slot name='stuff2' content={''}>{''}</Slot>
+        <Slot name='footer' content={''} />
+      </div>
     )
 
     assert.strictEqual(wrapper.html(), [
-      '<div class="layout-MyLayout">',
+      '<div>',
         '<h1>Layout</h1>',
         '<div class="slot-default body">',
           'Hello World!',
@@ -51,18 +61,19 @@ describe('Layout', function () {
     ].join(''))
   })
 
-  it('should render slots with concrete and default content', function () {
+  it('should render with concrete and default content', function () {
     const LayoutDefault = props => {
+      const { children } = props
       return (
-        <Layout name='Default' content={props.children}>
-          <Slot className='body'>
+        <div className='layout-default'>
+          <Slot className='body' content={children}>
             Hello World!
           </Slot>
-          <Slot name='footer'>
+          <Slot name='footer' content={children}>
             The Footer
           </Slot>
-          <Slot name='footer' className='big-foot' />
-        </Layout>
+          <Slot name='footer' className='big-foot' content={children} />
+        </div>
       )
     }
     const wrapper = render(
@@ -77,7 +88,7 @@ describe('Layout', function () {
     )
 
     assert.strictEqual(wrapper.html(), [
-      '<div class="layout-Default">',
+      '<div class="layout-default">',
         '<div class="slot-default body">',
           'Hello World!',
         '</div>',
@@ -93,15 +104,16 @@ describe('Layout', function () {
 
   it('should render unamed default slot with concrete content', function () {
     const LayoutDefault = props => {
+      const { children } = props
       return (
-        <Layout name='Default' content={props.children}>
-          <Slot className='body'>
+        <div className='layout-default'>
+          <Slot className='body' content={children}>
             Hello World!
           </Slot>
-          <Slot name='footer'>
+          <Slot name='footer' content={children}>
             The Footer
           </Slot>
-        </Layout>
+        </div>
       )
     }
     const wrapper = render(
@@ -113,7 +125,7 @@ describe('Layout', function () {
     )
 
     assert.strictEqual(wrapper.html(), [
-      '<div class="layout-Default">',
+      '<div class="layout-default">',
         '<div class="slot-default body new-body">',
           'The New Body',
         '</div>',
@@ -125,17 +137,17 @@ describe('Layout', function () {
   })
 
   it('should render named default slot with concrete content', function () {
-    const name = 'MyLayout'
     const LayoutDefault = props => {
+      const { children } = props
       return (
-        <Layout name='Default' content={props.children}>
-          <Slot className='body'>
+        <div className='layout-default'>
+          <Slot className='body' content={children}>
             Hello World!
           </Slot>
-          <Slot name='footer'>
+          <Slot name='footer' content={children}>
             The Footer
           </Slot>
-        </Layout>
+        </div>
       )
     }
     const wrapper = render(
@@ -147,7 +159,7 @@ describe('Layout', function () {
     )
 
     assert.strictEqual(wrapper.html(), [
-      '<div class="layout-Default">',
+      '<div class="layout-default">',
         '<div class="slot-default body new-body">',
           'The New Body',
         '</div>',
@@ -159,17 +171,17 @@ describe('Layout', function () {
   })
 
   it('should render default slot with unslotted concrete content', function () {
-    const name = 'MyLayout'
     const LayoutDefault = props => {
+      const { children } = props
       return (
-        <Layout name='Default' content={props.children}>
-          <Slot className='body'>
+        <div className='layout-default'>
+          <Slot className='body' content={children}>
             Hello World!
           </Slot>
-          <Slot name='footer'>
+          <Slot name='footer' content={children}>
             The Footer
           </Slot>
-        </Layout>
+        </div>
       )
     }
     const wrapper = render(
@@ -183,7 +195,7 @@ describe('Layout', function () {
     )
 
     assert.strictEqual(wrapper.html(), [
-      '<div class="layout-Default">',
+      '<div class="layout-default">',
         '<div class="slot-default body">',
           '<div>The New Body</div>',
           '<h1>Headline</h1>',
@@ -195,8 +207,7 @@ describe('Layout', function () {
     ].join(''))
   })
 
-  it('should not render nested <Slot> elements', function () {
-    const name = 'MyLayout'
+  it('should render nested <Slot> elements', function () {
     const Footer = props => (<footer {...props} />)
     class Body extends React.Component {
       render () {
@@ -204,51 +215,53 @@ describe('Layout', function () {
       }
     }
     const LayoutDefault = props => {
+      const { children } = props
       return (
-        <Layout name='Default' content={props.children}>
-          <Slot className='body' as={Body}>
+        <div className='layout-default'>
+          <Slot className='body' as={Body} content={children}>
             Hello World!
-            <Slot name='nothing' />
+            <Slot name='nothing' content={children} />
           </Slot>
-          <Slot name='footer' as={Footer}>
-            The Footer
+          <Slot name='footer' as={Footer} content={children}>
+            The Footer <Slot name='footer-inner' content={children} />
           </Slot>
-        </Layout>
+        </div>
       )
     }
     const wrapper = render(
       <LayoutDefault>
         <div slot className='new-body'>
           The New Body
-          <Slot name='funny'>Funny</Slot>
         </div>
+        <div slot='footer-inner'>Boom</div>
       </LayoutDefault>
     )
 
     assert.strictEqual(wrapper.html(), [
-      '<div class="layout-Default">',
+      '<div class="layout-default">',
         '<main class="slot-default body new-body">',
           'The New Body',
         '</main>',
         '<footer class="slot-footer">',
-          'The Footer',
+          'The Footer ',
+          '<div class="slot-footer-inner">Boom</div>',
         '</footer>',
       '</div>'
     ].join(''))
   })
 
   it('should render nested layouts as expected', function () {
-    const name = 'MyLayout'
     const LayoutDefault = props => {
+      const { children } = props
       return (
-        <Layout name='Default' content={props.children}>
-          <Slot className='body'>
+        <div className='layout-default'>
+          <Slot className='body' content={children}>
             Hello World!
           </Slot>
-          <Slot name='footer' as='footer'>
+          <Slot name='footer' as='footer' content={children}>
             The Footer
           </Slot>
-        </Layout>
+        </div>
       )
     }
     const wrapper = render(
@@ -265,10 +278,10 @@ describe('Layout', function () {
     )
 
     assert.strictEqual(wrapper.html(), [
-      '<div class="layout-Default">',
+      '<div class="layout-default">',
         '<div class="slot-default body new-body">',
           '<span>The New Body</span>',
-          '<div class="layout-Default">',
+          '<div class="layout-default">',
             '<div class="slot-default body">',
               'Hello World!',
             '</div>',

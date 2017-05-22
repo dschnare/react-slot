@@ -1,7 +1,7 @@
 {
-  "name": "react-slots",
+  "name": "react-slot",
   "version": "0.0.1",
-  "description": "Slot-based content distribution components for React",
+  "description": "Slot-based content distribution component for React",
   "main": "lib/index.js",
   "files": [
     "lib"

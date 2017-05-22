@@ -1,12 +1,12 @@
-# React Slots
+# React Slot
 
-A set of slot-based content distribution components for React. The technique
-was highly influenced by the content distribution techniques introduced by
+Slot-based content distribution component for React. The technique was highly
+influenced by the content distribution techniques used by
 [Vuejs](http://vuejs.org/v2/guide/components.html#Content-Distribution-with-Slots).
 
 ## Install
 
-    npm install react@">=15" react-dom@">=15" react-slots -S
+    npm install react@">=15" react-dom@">=15" react-slot -S
 
 ## Quick Start
 
@@ -22,12 +22,13 @@ was highly influenced by the content distribution techniques introduced by
     import { Layout, Slot } from 'react-layout'
 
     export default function LayoutDefault (props) {
+      const { children } = props
       return (
-        <Layout name='default' content={props.children}>
-          <Slot name='header' as='header'>Welcome!</Slot>
-          <Slot className='main' role='main' />
-          <Slot name='info'>Copyright 2017</Slot>
-          <Slot name='footer' as='footer' />
+        <div className='layout-default'>
+          <Slot name='header' as='header' content={children}>Welcome!</Slot>
+          <Slot className='main' role='main' content={children} />
+          <Slot name='info' content={children}>Copyright 2017</Slot>
+          <Slot name='footer' as='footer' content={children} />
         </Layout>
       )
     }
@@ -78,43 +79,15 @@ was highly influenced by the content distribution techniques introduced by
 
 ## API
 
-### Layout
-
-Lyout is a component that is meant to hold your common content and a set of
-`<Slot>` elements.
-
-**Props**
-
-- `name` *(required)* The name of this layout (inserted as class name 'layout-${name}')
-- `content` *(required)* The children of the wrapping React component
-- `id` The HTML id
-- `className` Additional class names
-- `dataset` *[default: {}]* An object with keys to set as 'data-' attributes
-- `role` The HTML role
-- `as` *[default: 'div']* The type of React element to create the root element as
-
-Example:
-
-    // A layout that will render HTML like the following:
-    // <div class="layout-Default layout" data-hook="top">...</div>
-    const LayoutDefault = props => {
-      return (
-        <Layout name='Default' className='layout' dataset={{ hook: 'top' }}>
-          // ... content and <Slot> elements ...
-        </Layout>
-      )
-    }
-
 ### Slot
 
-Slot is a component that is meant to compose `<Layout>` elements with. These act
-as the points where a layout can be altered by a component using the layout.
-
-*NOTE: The Slot component will render nothing when used outside the context of a
-Layout.*
+Slot is a component that is meant to compose your layouts with. These act
+as the points where a layout can be altered by a parent using the layout
+component.
 
 **Props**
 
+- `content` *[required]* The React children of the parent component
 - `name` The name of this slot (inserted as class name 'slot-${name}')
 - `id` The HTML id
 - `className` Additional class names
@@ -125,28 +98,25 @@ Layout.*
 Example:
 
     // A layout that will render HTML like the following:
-    // <div class="layout-Default layout" data-hook="top">
+    // <div class="layout-default">
     //  <header>Welcome!</header>
     //  <div class="slot-default main" role="main"></div>
     //  <div class="slot-info">Copyright 2017</div>
     //  <footer class="slot-footer"></footer>
     // </div>
     const LayoutDefault = props => {
+      const { children } = props
       return (
-        <Layout
-          name='Default'
-          content={props.children}
-          className='layout'
-          dataset={{ hook: 'top' }}>
-          <Slot name='header' as='header'>Welcome!</Slot>
-          <Slot className='main' role='main' />
-          <Slot name='info'>Copyright 2017</Slot>
-          <Slot name='footer' as='footer' />
+        <div className='layout-default'>
+          <Slot name='header' as='header' content={children}>Welcome!</Slot>
+          <Slot className='main' role='main' content={children} />
+          <Slot name='info' content={children}>Copyright 2017</Slot>
+          <Slot name='footer' as='footer' content={children} />
         </Layout>
       )
     }
 
-To insert content into a `Slot` the component using the layout needs to
+To insert content into a `Slot` the parent component using the layout needs to
 designate React subtrees to use a slot by setting the `slot` prop on an element
 to have its children inserted into the slot with the mathcing name (if one
 exists).
@@ -166,7 +136,7 @@ element in the layout.
     // in the layout...
     <Slot name='footer' className='footer' />
 
-    // Using the layout...
+    // in the parent component...
     <Layout>
       <div slot='footer' className='my-footer'>The Footer</div>
     </Layout>
@@ -175,7 +145,7 @@ element in the layout.
     <div class="slot-footer footer my-footer">TheFooter</div>
 
 Also, if a default slot exists and no slotted subtree is found with the value
-set to `default` or unnamed, then all React nodes without a slot designation
+set to `"default"` or `true`, then all React nodes without a slot designation
 will be inserted into the default slot.
 
     <div slot='slot-name'>...</div>
@@ -187,7 +157,7 @@ Example Usage of `LayoutDefault`:
 
     // A page component that uses LayoutDefault to structure its content. This
     // will render a page that looks like this:
-    // <div class="layout-Default layout" data-hook="top">
+    // <div class="layout-default">
     //  <header>Welcome!</header>
     //  <div class="slot-default main" role="main">
     //    <div>Hello World!</div>
@@ -205,22 +175,28 @@ Example Usage of `LayoutDefault`:
       )
     }
 
-Alternatively, you can explicitly insert content into a layout's default slot by
-name by setting the `slot` prop to `"default"`.
+### slot(name, children)
 
-    // This will yield the same rendered HTML as above.
-    const Page = props => {
-      return (
-        <LayoutDefault>
-          <div slot='info'>Copyright 2018</div>
-          <div slot='default'>
-            <div>Hello World!</div>
-            <p>This is some more content inserted into the default slot</p>
-          </div>
-        </LayoutDefault>
-      )
-    }
+This function will pull out the children of any React subtree designated by the
+`slot` prop that matches the `name` argument. This function will not render a
+root node at all, this is left up to the author to provide. This gives you more
+control over a slot's root element. This is typically used inside another `<Slot>`
+so parent components can choose to override the entire wrapping slot or the
+inner slot.
 
-## Related/Works Well With Modules
+    <Slot name='footer' content={children}>
+      Copyright {slot('copyrightYear', children) || '2017'}
+    </Slot>
+
+Then in the parent component:
+
+    // Replace the entire footer...
+    <div slot='footer'>...</div>
+
+    // ...or just replace the copyright year
+    <div slot='copyrightYear'>2018</div>
+
+
+## Related Modules
 
 - [react-layout](https://npmjs.org/react-layout)
