@@ -19,7 +19,7 @@ influenced by the content distribution techniques used by
     //  <footer class="slot-footer"></footer>
     // </div>
     import * as React from 'react'
-    import { Slot } from 'react-layout'
+    import { Slot } from 'react-slot'
 
     export default function LayoutDefault (props) {
       const { children } = props
