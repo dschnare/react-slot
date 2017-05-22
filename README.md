@@ -29,7 +29,7 @@ influenced by the content distribution techniques used by
           <Slot className='main' role='main' content={children} />
           <Slot name='info' content={children}>Copyright 2017</Slot>
           <Slot name='footer' as='footer' content={children} />
-        </Layout>
+        </div>
       )
     }
 
@@ -144,9 +144,9 @@ element in the layout.
     // Results in the footer slot being rendered as...
     <div class="slot-footer footer my-footer">TheFooter</div>
 
-Also, if a default slot exists and no slotted subtree is found with the value
-set to `"default"` or `true`, then all React nodes without a slot designation
-will be inserted into the default slot.
+Also, if a default slot exists and no slotted subtree is found with the `slot`
+prop set to `"default"` or `true`, then all React nodes without a slot
+designation will be inserted into the default slot.
 
     <div slot='slot-name'>...</div>
     <div>Default content1</div>
@@ -175,14 +175,34 @@ Example Usage of `LayoutDefault`:
       )
     }
 
+Additionally, Slots can be nested to provide parent components with increasing
+granularity when overriding slots.
+
+    <Slot name='outer' content={children}>
+      This is the content
+      <Slot name='inner' content={children}>
+        This is the inner content
+      </Slot>
+    </Slot>
+
+Then to insert into these slots you have a choice to override the entire `outer`
+slot...
+
+    <div slot='outer'>...</div>
+
+...or just the `inner` slot.
+
+    <div slot='inner'>....</div>
+
+But if the `outer` slot is overrdden then the entirety of its contents will be
+replaced.
+
 ### slot(name, children)
 
 This function will pull out the children of any React subtree designated by the
 `slot` prop that matches the `name` argument. This function will not render a
 root node at all, this is left up to the author to provide. This gives you more
-control over a slot's root element. This is typically used inside another `<Slot>`
-so parent components can choose to override the entire wrapping slot or the
-inner slot.
+control over a slot's root element.
 
     <Slot name='footer' content={children}>
       Copyright {slot('copyrightYear', children) || '2017'}

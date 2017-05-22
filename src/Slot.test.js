@@ -250,6 +250,48 @@ describe('Slot', function () {
     ].join(''))
   })
 
+  it('should override nested <Slot> elements when parent slots are overridden', function () {
+    const Footer = props => (<footer {...props} />)
+    class Body extends React.Component {
+      render () {
+        return (<main {...this.props} />)
+      }
+    }
+    const LayoutDefault = props => {
+      const { children } = props
+      return (
+        <div className='layout-default'>
+          <Slot className='body' as={Body} content={children}>
+            Hello World!
+            <Slot name='nothing' content={children} />
+          </Slot>
+          <Slot name='footer' as={Footer} content={children}>
+            The Footer <Slot name='footer-inner' content={children} />
+          </Slot>
+        </div>
+      )
+    }
+    const wrapper = render(
+      <LayoutDefault>
+        <div slot className='new-body'>
+          The New Body
+        </div>
+        <div slot='footer'>The Footer Boom</div>
+      </LayoutDefault>
+    )
+
+    assert.strictEqual(wrapper.html(), [
+      '<div class="layout-default">',
+        '<main class="slot-default body new-body">',
+          'The New Body',
+        '</main>',
+        '<footer class="slot-footer">',
+          'The Footer Boom',
+        '</footer>',
+      '</div>'
+    ].join(''))
+  })
+
   it('should render nested layouts as expected', function () {
     const LayoutDefault = props => {
       const { children } = props
