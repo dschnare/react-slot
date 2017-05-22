@@ -19,6 +19,7 @@
     "slot"
   ],
   "scripts": {
+    "prepublish": "npm run compile",
     "compile": "tsc -p .",
     "compile:watch": "npm run compile -- --watch",
     "test": "mocha lib/*.test.js"
