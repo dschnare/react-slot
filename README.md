@@ -19,7 +19,7 @@ influenced by the content distribution techniques used by
     //  <footer class="slot-footer"></footer>
     // </div>
     import * as React from 'react'
-    import { Layout, Slot } from 'react-layout'
+    import { Slot } from 'react-layout'
 
     export default function LayoutDefault (props) {
       const { children } = props
@@ -35,6 +35,14 @@ influenced by the content distribution techniques used by
 
     // PageHome.js
     // Create a page that will insert content into a layout's slots.
+    // Generates HTML like the following (depends on what layout is used):
+    // <div class="page-home">
+    //  <div class="layout-default">
+    //    <header class="slot-header"><h1>Home</h1></header>
+    //    <div class="slot-default main" role="main">The main content</div>
+    //    <div class="slot-info">Copyright 2017</div>
+    //  </div>
+    // </div>
     import * as React from 'react'
 
     export default PageHome extends React.Component {
@@ -42,26 +50,19 @@ influenced by the content distribution techniques used by
         layout: PropTypes.func.isRequired
       }
 
-      constructor (props) {
-        super(props)
-        this.clicked = this.clicked.bind(this)
-      }
-
       render () {
         const { layout } = this.props
 
         return (
-          <layout>
-            <div slot='header'><h1>Home</h1></div>
-            <div slot>
-              The main content
-            </div>
-          </layout>
+          <div className='page-home'>
+            <layout>
+              <div slot='header'><h1>Home</h1></div>
+              <div slot>
+                The main content
+              </div>
+            </layout>
+          </div>
         )
-      }
-
-      clicked (event) {
-        console.log('clicked!')
       }
     }
 
@@ -83,19 +84,25 @@ influenced by the content distribution techniques used by
 
 Slot is a component that is meant to compose your layouts with. These act
 as the points where a layout can be altered by a parent using the layout
-component.
+component. The slot without a name is known as the default slot.
 
 **Props**
 
 - `content` *[required]* The React children of the parent component
+- `children` The default content to render if no content is inserted from the parent component
 - `name` The name of this slot (inserted as class name 'slot-${name}')
 - `id` The HTML id
 - `className` Additional class names
-- `dataset` *[default: {}]* An object with keys to set as 'data-' attributes
+- `dataset` *[default: {}]* An object with keys to set as 'data-' attributes (keys must not contain a 'data-' prefix)
 - `role` The HTML role
-- `as` *[default: 'div']* The type of React element to create the root element as
+- `as` *[default: 'div']* The type of React element (string or function) to create the root element as
 
-Example:
+Something to keep in mind, Slot elements will render nothing if they don't have
+any default content and the parent component didn't insert any content.
+
+    <Slot name='my-slot' content={children} />
+
+Full Example:
 
     // A layout that will render HTML like the following:
     // <div class="layout-default">
@@ -119,7 +126,7 @@ Example:
 To insert content into a `Slot` the parent component using the layout needs to
 designate React subtrees to use a slot by setting the `slot` prop on an element
 to have its children inserted into the slot with the mathcing name (if one
-exists).
+exists). *Only the first matching React subtree will have its children inserted.*
 
     <div slot='slot-name'>...inserted into the slot-name slot...</div>
 
@@ -201,8 +208,8 @@ replaced.
 
 This function will pull out the children of any React subtree designated by the
 `slot` prop that matches the `name` argument. This function will not render a
-root node at all, this is left up to the author to provide. This gives you more
-control over a slot's root element.
+root node at all, this is left up to the parent component to provide. This gives
+you more control over a slot's root element.
 
     <Slot name='footer' content={children}>
       Copyright {slot('copyrightYear', children) || '2017'}

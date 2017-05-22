@@ -1,6 +1,6 @@
 {
   "name": "react-slot",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Slot-based content distribution component for React",
   "main": "lib/index.js",
   "files": [
@@ -26,6 +26,13 @@
   },
   "author": "Darren Schnare",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/dschnare/react-slot"
+  },
+  "bugs": {
+    "url": "https://github.com/dschnare/react-slot/issues"
+  },
   "dependencies": {
     "prop-types": "^15.5.10"
   },
