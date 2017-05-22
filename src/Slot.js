@@ -51,7 +51,7 @@ export default class Slot extends React.Component {
     attrs.className = this.getSlotClassName()
 
     if (slotNode) {
-      const opts = { ignore: [ 'id', 'slot', 'children' ] }
+      const opts = { ignore: [ 'slot', 'children' ] }
       attrs = mergeProps(attrs, slotNode.props, opts)
       content = slotNode.props.children
     } else {
@@ -80,7 +80,7 @@ export default class Slot extends React.Component {
     attrs.className = this.getSlotClassName()
 
     if (slotNode) {
-      const opts = { ignore: [ 'id', 'slot', 'children' ] }
+      const opts = { ignore: [ 'slot', 'children' ] }
       attrs = mergeProps(attrs, slotNode.props, opts)
       content = slotNode.props.children
     }
