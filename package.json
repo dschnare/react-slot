@@ -1,6 +1,6 @@
 {
   "name": "react-slot",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Slot-based content distribution component for React",
   "main": "lib/index.js",
   "files": [
@@ -28,7 +28,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dschnare/react-slot"
+    "url": "https://github.com/dschnare/react-slot.git"
   },
   "bugs": {
     "url": "https://github.com/dschnare/react-slot/issues"
