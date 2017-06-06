@@ -6,7 +6,10 @@
     "moduleResolution": "node",
     "jsx": "react",
     "reactNamespace": "React",
-    "outDir": "lib"
+    "outDir": "lib",
+    "typeRoots": [
+      "node_modules/@types"
+    ]
   },
   "include": [
     "./src/**/*.js"
